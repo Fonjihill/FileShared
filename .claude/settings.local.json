@@ -19,7 +19,8 @@
       "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/schema-hexagonal.png docs/)",
       "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/cours-architecture-hexagonale-ddd.docx docs/)",
       "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/questions-entretien-technique.docx docs/)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(grep:*)"
     ]
   }
 }
