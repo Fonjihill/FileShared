@@ -39,3 +39,9 @@ docs/node_modules/
 ### Logs ###
 *.log
 firebase-debug.log
+
+### Claude ###
+.claude/settings.local.json
+
+### Docs ###
+docs/
