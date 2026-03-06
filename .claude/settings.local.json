@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(textutil:*)",
+      "Read(//private/tmp/FileShared/**)",
+      "Bash(cp -r /Users/mistert/Bomunto/02_Projets_Internes/fileshared/src .)",
+      "Bash(cp -r /Users/mistert/Bomunto/02_Projets_Internes/fileshared/.mvn .)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/mvnw .)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/mvnw.cmd .)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/pom.xml .)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docker-compose.yml .)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/.gitignore .)",
+      "Bash(mkdir -p docs)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/generate-schema.js docs/)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/generate-cours-hexa.js docs/)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/generate-entretien.js docs/)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/schema-hexagonal.png docs/)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/cours-architecture-hexagonale-ddd.docx docs/)",
+      "Bash(cp /Users/mistert/Bomunto/02_Projets_Internes/fileshared/docs/questions-entretien-technique.docx docs/)"
+    ]
+  }
+}
