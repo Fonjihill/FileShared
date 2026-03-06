@@ -83,5 +83,9 @@ public class Fichier extends EntityAbstract {
         return this.statut == StatutFichier.SUPPRIME;
     }
 
+    public void marquerCommeSupprime() {
+        this.statut = StatutFichier.SUPPRIME;
+    }
+
 
 }
