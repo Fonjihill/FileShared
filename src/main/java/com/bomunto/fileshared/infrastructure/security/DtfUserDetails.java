@@ -1,6 +1,6 @@
 package com.bomunto.fileshared.infrastructure.security;
 
-import com.bomunto.fileshared.infrastructure.persistence.entity.UtilisateurJpaEntity;
+import com.bomunto.fileshared.infrastructure.persistence.identity.entity.UtilisateurJpaEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

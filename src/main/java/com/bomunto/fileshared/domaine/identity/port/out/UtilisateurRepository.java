@@ -4,6 +4,9 @@ import com.bomunto.fileshared.domaine.identity.Utilisateur;
 
 import java.util.Optional;
 
+/**
+ * Port de sortie pour la gestion des utilisateurs.
+ */
 public interface UtilisateurRepository{
 
     Utilisateur save(Utilisateur utilisateur);

@@ -1,5 +1,7 @@
 package com.bomunto.fileshared.domaine.identity;
 
+import com.bomunto.fileshared.domaine.common.EntityAbstract;
+
 import java.time.Instant;
 import java.util.UUID;
 

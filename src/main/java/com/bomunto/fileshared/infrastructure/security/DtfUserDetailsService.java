@@ -1,7 +1,7 @@
 package com.bomunto.fileshared.infrastructure.security;
 
-import com.bomunto.fileshared.infrastructure.persistence.entity.UtilisateurJpaEntity;
-import com.bomunto.fileshared.infrastructure.persistence.jpa.JpaUtilisateurRepository;
+import com.bomunto.fileshared.infrastructure.persistence.identity.entity.UtilisateurJpaEntity;
+import com.bomunto.fileshared.infrastructure.persistence.identity.jpa.JpaUtilisateurRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
