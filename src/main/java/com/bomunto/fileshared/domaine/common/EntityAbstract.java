@@ -16,7 +16,6 @@ public abstract class EntityAbstract {
     public EntityAbstract() {
     }
 
-
     /*
      * Constructeur complet pour les entités qui ont besoin de champs de création et de mise à jour.
      */
