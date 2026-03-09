@@ -44,4 +44,6 @@ firebase-debug.log
 .claude/settings.local.json
 
 ### Docs ###
-docs/
+docs/*
+!docs/diagrammes-classes-filesharing.docx
+!docs/schema-hexagonal.png
