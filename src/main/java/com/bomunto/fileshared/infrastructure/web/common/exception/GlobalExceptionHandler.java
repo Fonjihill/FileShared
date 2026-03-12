@@ -1,4 +1,4 @@
-package com.bomunto.fileshared.infrastructure.web.common;
+package com.bomunto.fileshared.infrastructure.web.common.exception;
 
 import com.bomunto.fileshared.domaine.filesharing.exception.AccesRefuseException;
 import com.bomunto.fileshared.domaine.filesharing.exception.FichierIntrouvableException;

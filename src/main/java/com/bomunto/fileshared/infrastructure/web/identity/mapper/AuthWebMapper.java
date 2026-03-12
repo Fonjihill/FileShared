@@ -23,8 +23,7 @@ public final class AuthWebMapper {
     public static AuthResponse toLoginResponse(AuthResult result) {
         return new AuthResponse(
                 result.token(),
-                result.refreshToken(),
-                UtilisateurDto.from(result.utilisateur())
+                result.refreshToken()// Les informations de l'utilisateur seront ajoutées dans le service d'authentification
         );
     }
 

@@ -8,7 +8,6 @@ import com.bomunto.fileshared.domaine.identity.Utilisateur;
  *
  * @param token        Le token d'accès JWT pour l'utilisateur.
  * @param refreshToken Le token de rafraîchissement pour obtenir un nouveau token d'accès.
- * @param utilisateur  Les informations de l'utilisateur authentifié.
  */
-public record AuthResult(String token, String refreshToken, Utilisateur utilisateur) {
+public record AuthResult(String token, String refreshToken) {
 }

@@ -9,8 +9,6 @@ import com.bomunto.fileshared.domaine.identity.port.out.PasswordHasher;
 import com.bomunto.fileshared.domaine.identity.port.out.TokenProvider;
 import com.bomunto.fileshared.domaine.identity.port.out.UtilisateurRepository;
 import org.springframework.stereotype.Service;
-
-import javax.naming.AuthenticationException;
 import java.time.Instant;
 
 @Service
@@ -50,8 +48,7 @@ public class AuthServiceImpl implements RegisterUseCase, LoginUseCase {
 
         return new AuthResult(
                 tokenProvider.generateToken(utilisateur),
-                tokenProvider.generateRefreshToken(utilisateur),
-                utilisateur
+                tokenProvider.generateRefreshToken(utilisateur)
         );
     }
 }
