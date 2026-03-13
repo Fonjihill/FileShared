@@ -78,6 +78,7 @@ public class FichierServiceImpl implements UploadFichierUseCase, TelechargerFich
     @Override
     public FichierContenu telecharger(TelechargerCommand command) {
 
+        // Récupérer le fichier depuis la base de données
         Fichier fichier = fichierRepository.findById(command.fichierId())
                 .orElseThrow(() -> new FichierIntrouvableException(command.fichierId()));
 
@@ -85,17 +86,23 @@ public class FichierServiceImpl implements UploadFichierUseCase, TelechargerFich
         if(!fichier.estActif()) {
             throw new FichierIntrouvableException(command.fichierId());
         }
-
+        // Vérifier que l'utilisateur est le propriétaire du fichier
         boolean estProprietaire = fichier.getProprietaireId().equals(command.utilisateurId());
+
+        // Vérifier les partages d'utilisateurs pour voir si l'utilisateur a un partage avec droit de téléchargement
         boolean aUnPartage = partageUtilisateurRepository.findByDestinataire(command.utilisateurId())
                 .stream()
                 .anyMatch(partage -> partage.getFichierId().equals(command.fichierId()));
 
+        // Si l'utilisateur n'est ni le propriétaire ni un destinataire de partage, refuser l'accès
         if(!estProprietaire && !aUnPartage) {
             throw new AccesRefuseException();
         }
 
+        // Récupérer le contenu du fichier depuis le système de fichiers
         InputStream contenu = fileStorage.recuperer(fichier.getCheminStockage());
+
+        // Retourner un FichierContenu avec les informations et le flux de données du fichier
         return new FichierContenu(fichier.getNomOriginal(), fichier.getTypeMime(), contenu);
     }
 
