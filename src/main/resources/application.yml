@@ -3,7 +3,7 @@ spring:
     name: fileshared
 
 
-  # PostgreSQL + PostGIS
+  # PostgreSQL
   datasource:
     url: jdbc:postgresql://localhost:5434/fileshared_db
     username: fileshared
@@ -39,7 +39,7 @@ app:
     expiration-ms: 86400000 # 24h
     refresh-expiration-ms: 604800000 # 7 days
   cors:
-    allowed-origins: http://localhost:3000,http://localhost:3001
+    allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:4200
 
 # Logging
 logging:

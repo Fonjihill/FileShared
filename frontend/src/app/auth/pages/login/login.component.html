@@ -1,0 +1,37 @@
+<div class="auth-container">
+  <p-card header="Connexion">
+
+    <div *ngIf="erreur" class="erreur">{{ erreur }}</div>
+
+    <form [formGroup]="formulaire" (ngSubmit)="connecter()">
+
+      <div class="champ">
+        <label for="email">Email</label>
+        <input id="email" type="email" pInputText formControlName="email">
+        <small *ngIf="formulaire.get('email')?.invalid && formulaire.get('email')?.touched">
+          Entrez un email valide
+        </small>
+      </div>
+
+      <div class="champ">
+        <label for="motDePasse">Mot de passe</label>
+        <p-password id="motDePasse" formControlName="motDePasse"
+                    [toggleMask]="true" [feedback]="false" styleClass="w-full">
+        </p-password>
+        <small *ngIf="formulaire.get('motDePasse')?.invalid && formulaire.get('motDePasse')?.touched">
+          6 caractères minimum
+        </small>
+      </div>
+
+      <button pButton type="submit" label="Se connecter"
+              [disabled]="formulaire.invalid || chargement"
+              [loading]="chargement"
+              class="w-full">
+      </button>
+
+    </form>
+
+    <p class="lien"><a routerLink="/register">Pas de compte ? S'inscrire</a></p>
+
+  </p-card>
+</div>
