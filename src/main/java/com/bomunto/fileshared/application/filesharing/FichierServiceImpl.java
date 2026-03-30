@@ -1,12 +1,16 @@
 package com.bomunto.fileshared.application.filesharing;
 
 import com.bomunto.fileshared.domaine.filesharing.Fichier;
+import com.bomunto.fileshared.domaine.filesharing.LienPartage;
+import com.bomunto.fileshared.domaine.filesharing.PartageUtilisateur;
 import com.bomunto.fileshared.domaine.filesharing.StatutFichier;
 import com.bomunto.fileshared.domaine.filesharing.exception.AccesRefuseException;
 import com.bomunto.fileshared.domaine.filesharing.exception.FichierIntrouvableException;
+import com.bomunto.fileshared.domaine.filesharing.exception.LienExpireException;
 import com.bomunto.fileshared.domaine.filesharing.port.in.*;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FichierRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FileStorage;
+import com.bomunto.fileshared.domaine.filesharing.port.out.LienPartageRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.PartageUtilisateurRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +25,19 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class FichierServiceImpl implements UploadFichierUseCase, TelechargerFichierUseCase, ListerFichierUseCase, SupprimerFichierUseCase{
+public class FichierServiceImpl implements UploadFichierUseCase, TelechargerFichierUseCase, ListerFichierUseCase, SupprimerFichierUseCase, PartagerFichierUseCase{
 
     private final FichierRepository fichierRepository;
     private final FileStorage fileStorage;
     private final PartageUtilisateurRepository partageUtilisateurRepository;
+    private final LienPartageRepository lienPartageRepository;
 
     @Autowired
-    public FichierServiceImpl(FichierRepository fichierRepository, FileStorage fileStorage, PartageUtilisateurRepository partageUtilisateurRepository) {
+    public FichierServiceImpl(FichierRepository fichierRepository, FileStorage fileStorage, PartageUtilisateurRepository partageUtilisateurRepository, LienPartageRepository lienPartageRepository) {
         this.fichierRepository = fichierRepository;
         this.fileStorage = fileStorage;
         this.partageUtilisateurRepository = partageUtilisateurRepository;
+        this.lienPartageRepository = lienPartageRepository;
     }
 
     /**
@@ -167,6 +173,90 @@ public class FichierServiceImpl implements UploadFichierUseCase, TelechargerFich
 
     @Override
     public FichierContenu telechargerParToken(String token) {
-        return null;
+        // 1. Récupérer le lien de partage via le token
+        LienPartage lien = lienPartageRepository.findByToken(token)
+                .orElseThrow(() -> new FichierIntrouvableException(null));
+
+        // 2. Vérifier que le lien est valide (actif et non expiré)
+        if (!lien.estValide()) {
+            throw new LienExpireException();
+        }
+
+        // 3. Récupérer le fichier
+        Fichier fichier = fichierRepository.findById(lien.getFichierId())
+                .orElseThrow(() -> new FichierIntrouvableException(lien.getFichierId()));
+
+        if (!fichier.estActif()) {
+            throw new FichierIntrouvableException(lien.getFichierId());
+        }
+
+        // 4. Récupérer le contenu et retourner
+        InputStream contenu = fileStorage.recuperer(fichier.getCheminStockage());
+        return new FichierContenu(fichier.getNomOriginal(), fichier.getTypeMime(), contenu);
+    }
+
+    @Override
+    public LienPartage partagerParLien(CreerLienCommand command) {
+        Fichier fichier = fichierRepository.findById(command.fichierId())
+                .orElseThrow(() -> new FichierIntrouvableException(command.fichierId()));
+
+            // Vérifier que l'utilisateur est le propriétaire du fichier
+        if(!fichier.getProprietaireId().equals(command.proprietaireId())) {
+            throw new AccesRefuseException();
+        }
+        // Créer un lien de partage
+        LienPartage lienPartage = new LienPartage(
+                null, // id
+                command.fichierId(),
+                UUID.randomUUID().toString(), // token unique
+                command.permission(),
+                command.expiration(),
+                true, // actif
+                command.proprietaireId(),
+                Instant.now(),
+                Instant.now()
+        );
+
+        return lienPartageRepository.save(lienPartage);
+    }
+
+    @Override
+    public PartageUtilisateur partagerAvecUtilisateur(PartagerCommand command) {
+
+        Fichier fichier = fichierRepository.findById(command.fichierId())
+                .orElseThrow(() -> new FichierIntrouvableException(command.fichierId()));
+
+        // Vérifier que l'utilisateur est le propriétaire du fichier
+        if(!fichier.getProprietaireId().equals(command.proprietaireId())) {
+            throw new AccesRefuseException();
+        }
+        // Créer un partage utilisateur
+        PartageUtilisateur partageUtilisateur = new PartageUtilisateur(
+                null, // id
+                command.fichierId(),
+                command.destinataireId(),
+                command.permission(),
+                Instant.now(),
+                Instant.now()
+        );
+
+        return partageUtilisateurRepository.save(partageUtilisateur);
+    }
+
+    @Override
+    public void revoquerPartage(UUID partageId, UUID utilisateurId) {
+        // Récupérer le partage
+        PartageUtilisateur partage = partageUtilisateurRepository.findById(partageId)
+                .orElseThrow(() -> new FichierIntrouvableException(partageId));
+
+        // Vérifier que l'utilisateur est le propriétaire du fichier partagé
+        Fichier fichier = fichierRepository.findById(partage.getFichierId())
+                .orElseThrow(() -> new FichierIntrouvableException(partage.getFichierId()));
+
+        if (!fichier.getProprietaireId().equals(utilisateurId)) {
+            throw new AccesRefuseException();
+        }
+
+        partageUtilisateurRepository.delete(partageId);
     }
 }

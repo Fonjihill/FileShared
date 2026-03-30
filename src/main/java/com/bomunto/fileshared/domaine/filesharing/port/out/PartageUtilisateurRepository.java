@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface PartageUtilisateurRepository {
 
     PartageUtilisateur save(PartageUtilisateur partage);
+    java.util.Optional<PartageUtilisateur> findById(UUID id);
     List<PartageUtilisateur> findByDestinataire(UUID utilisateurId);
     List<PartageUtilisateur> findByFichierId(UUID fichierId);
     void delete(UUID id);

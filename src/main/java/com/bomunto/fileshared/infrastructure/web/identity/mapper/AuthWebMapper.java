@@ -8,7 +8,6 @@ import com.bomunto.fileshared.infrastructure.web.identity.dto.*;
 
 public final class AuthWebMapper {
 
-    // Constructeur privé pour empêcher l'instanciation de la classe
     private AuthWebMapper() {}
 
     public static RegisterCommand toRegisterCommand(RegisterRequest req) {
@@ -23,7 +22,7 @@ public final class AuthWebMapper {
     public static AuthResponse toLoginResponse(AuthResult result) {
         return new AuthResponse(
                 result.token(),
-                result.refreshToken()// Les informations de l'utilisateur seront ajoutées dans le service d'authentification
+                result.refreshToken()
         );
     }
 

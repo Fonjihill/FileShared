@@ -10,9 +10,10 @@ import com.bomunto.fileshared.domaine.identity.port.out.TokenProvider;
 import com.bomunto.fileshared.domaine.identity.port.out.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
-public class AuthServiceImpl implements RegisterUseCase, LoginUseCase {
+public class AuthServiceImpl implements RegisterUseCase, LoginUseCase, RefreshTokenUseCase, GetProfilUseCase {
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordHasher passwordHasher;
     private final TokenProvider tokenProvider;
@@ -50,5 +51,32 @@ public class AuthServiceImpl implements RegisterUseCase, LoginUseCase {
                 tokenProvider.generateToken(utilisateur),
                 tokenProvider.generateRefreshToken(utilisateur)
         );
+    }
+
+    @Override
+    public AuthResult refresh(String refreshToken) {
+        // 1. Extraire l'email du refresh token
+        String email = tokenProvider.extractUsername(refreshToken);
+
+        // 2. Vérifier que le token est valide
+        if (!tokenProvider.isTokenValid(refreshToken, email)) {
+            throw new IdentifiantsInvalidesException();
+        }
+
+        // 3. Récupérer l'utilisateur
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(IdentifiantsInvalidesException::new);
+
+        // 4. Générer de nouveaux tokens
+        return new AuthResult(
+                tokenProvider.generateToken(utilisateur),
+                tokenProvider.generateRefreshToken(utilisateur)
+        );
+    }
+
+    @Override
+    public Utilisateur getProfil(UUID utilisateurId) {
+        return utilisateurRepository.findById(utilisateurId)
+                .orElseThrow(IdentifiantsInvalidesException::new);
     }
 }

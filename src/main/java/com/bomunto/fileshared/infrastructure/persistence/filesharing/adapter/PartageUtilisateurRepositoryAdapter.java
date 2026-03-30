@@ -7,6 +7,7 @@ import com.bomunto.fileshared.infrastructure.persistence.filesharing.mapper.Part
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -21,6 +22,11 @@ public class PartageUtilisateurRepositoryAdapter implements PartageUtilisateurRe
     @Override
     public PartageUtilisateur save(PartageUtilisateur partage) {
         return PartageUtilisateurMapper.toDomain(jpa.save(PartageUtilisateurMapper.toJpa(partage)));
+    }
+
+    @Override
+    public Optional<PartageUtilisateur> findById(UUID id) {
+        return jpa.findById(id).map(PartageUtilisateurMapper::toDomain);
     }
 
     @Override

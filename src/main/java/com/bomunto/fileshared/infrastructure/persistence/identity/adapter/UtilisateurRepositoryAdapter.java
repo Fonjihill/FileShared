@@ -8,6 +8,7 @@ import com.bomunto.fileshared.infrastructure.persistence.identity.mapper.Utilisa
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class UtilisateurRepositoryAdapter implements UtilisateurRepository {
@@ -23,6 +24,11 @@ public class UtilisateurRepositoryAdapter implements UtilisateurRepository {
         UtilisateurJpaEntity jpaEntity = UtilisateurMapper.toJpa(utilisateur);
         UtilisateurJpaEntity saved = jpa.save(jpaEntity);
         return UtilisateurMapper.toDomain(saved);
+    }
+
+    @Override
+    public Optional<Utilisateur> findById(UUID id) {
+        return jpa.findById(id).map(UtilisateurMapper::toDomain);
     }
 
     @Override
