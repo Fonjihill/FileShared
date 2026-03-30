@@ -1,0 +1,33 @@
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+
+  .empty-icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    i {
+      font-size: 1.5rem;
+      color: #94a3b8;
+    }
+  }
+
+  h3 {
+    color: #0f172a;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    margin: 0;
+  }
+}

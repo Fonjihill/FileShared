@@ -106,4 +106,12 @@ public class Fichier extends EntityAbstract {
     public void marquerCommeSupprime() {
         this.statut = StatutFichier.SUPPRIME;
     }
+
+    /**
+     * Renomme le fichier avec un nouveau nom.
+     * @param nouveauNom Le nouveau nom du fichier.
+     */
+    public void renommer(String nouveauNom) {
+        this.nom = nouveauNom;
+    }
 }

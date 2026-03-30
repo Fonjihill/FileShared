@@ -1,0 +1,83 @@
+<!-- Logo -->
+<div class="sidebar-header">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 3C2 1.89543 2.89543 1 4 1H8.58579C8.851 1 9.10536 1.10536 9.29289 1.29289L13.7071 5.70711C13.8946 5.89464 14 6.149 14 6.41421V13C14 14.1046 13.1046 15 12 15H4C2.89543 15 2 14.1046 2 13V3Z" fill="white"/>
+        <path d="M9 1V5C9 5.55228 9.44772 6 10 6H14" fill="white" fill-opacity="0.5"/>
+        <path d="M7 9L9.5 11.5M9.5 11.5L12 9M9.5 11.5V7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span>FileShared</span>
+  </div>
+</div>
+
+<!-- Search -->
+<div class="sidebar-search">
+  <div class="search-input">
+    <i class="pi pi-search search-icon"></i>
+    <input type="text" placeholder="Rechercher..." readonly>
+    <span class="search-shortcut">&#8984;K</span>
+  </div>
+</div>
+
+<!-- Main nav -->
+<div class="nav-section">
+  <span class="nav-section-title">Menu principal</span>
+  <nav>
+    <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+      <i class="pi pi-th-large"></i>
+      <span>Dashboard</span>
+    </a>
+    <a class="nav-item" routerLink="/fichiers" routerLinkActive="active">
+      <i class="pi pi-folder"></i>
+      <span>Mes fichiers</span>
+    </a>
+    <a class="nav-item" routerLink="/partages" routerLinkActive="active">
+      <i class="pi pi-share-alt"></i>
+      <span>Partages avec moi</span>
+    </a>
+    <a class="nav-item" routerLink="/activites" routerLinkActive="active">
+      <i class="pi pi-clock"></i>
+      <span>Historique</span>
+    </a>
+  </nav>
+</div>
+
+<!-- Settings nav -->
+<div class="nav-section">
+  <span class="nav-section-title">Parametres</span>
+  <nav>
+    <a class="nav-item" routerLink="/profil" routerLinkActive="active">
+      <i class="pi pi-user"></i>
+      <span>Mon profil</span>
+    </a>
+    <a class="nav-item" (click)="deconnecter()" style="cursor: pointer;">
+      <i class="pi pi-sign-out"></i>
+      <span>Deconnexion</span>
+    </a>
+  </nav>
+</div>
+
+<!-- Spacer -->
+<div class="sidebar-spacer"></div>
+
+<!-- Quota card -->
+<div class="sidebar-quota-card" *ngIf="quota">
+  <div class="quota-header">
+    <span class="quota-title">Stockage</span>
+    <span class="quota-values">{{ formatTaille(quota.utilise) }} / {{ formatTaille(quota.maximum) }}</span>
+  </div>
+  <div class="quota-bar">
+    <div class="quota-fill" [style.width.%]="quotaPercent" [style.background]="quotaCouleur"></div>
+  </div>
+</div>
+
+<!-- User footer -->
+<div class="sidebar-footer" *ngIf="utilisateur">
+  <div class="user-avatar">{{ getInitiale() }}</div>
+  <div class="user-info">
+    <span class="user-name">{{ utilisateur.username }}</span>
+    <span class="user-email">{{ utilisateur.email }}</span>
+  </div>
+</div>

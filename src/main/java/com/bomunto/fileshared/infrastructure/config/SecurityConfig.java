@@ -44,9 +44,11 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/me").authenticated()
+                .requestMatchers("/auth/me", "/auth/users/search").authenticated()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/partages/{token}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/partages/{token}/info").permitAll()
+                .requestMatchers(HttpMethod.POST, "/partages/{token}/telecharger").permitAll()
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/docs/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()

@@ -1,0 +1,30 @@
+<div class="page-header">
+  <div>
+    <h1>Mon profil</h1>
+    <p class="page-subtitle">Informations de votre compte</p>
+  </div>
+</div>
+
+<div *ngIf="utilisateur" class="profil-card">
+  <div class="profil-avatar">{{ getInitiale() }}</div>
+  <div class="profil-details">
+    <div class="profil-row">
+      <span class="profil-label">Nom d'utilisateur</span>
+      <span class="profil-value">{{ utilisateur.username }}</span>
+    </div>
+    <div class="profil-row">
+      <span class="profil-label">Email</span>
+      <span class="profil-value">{{ utilisateur.email }}</span>
+    </div>
+    <div class="profil-row">
+      <span class="profil-label">Role</span>
+      <span class="profil-value">
+        <span class="role-badge">{{ utilisateur.role }}</span>
+      </span>
+    </div>
+    <div class="profil-row">
+      <span class="profil-label">Membre depuis</span>
+      <span class="profil-value">{{ utilisateur.createdAt | date:'dd MMMM yyyy' }}</span>
+    </div>
+  </div>
+</div>

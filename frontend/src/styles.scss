@@ -1,4 +1,817 @@
-/* You can add global styles to this file, and also import other style files */
 @import "primeng/resources/themes/lara-light-blue/theme.css";
 @import "primeng/resources/primeng.min.css";
 @import "primeicons/primeicons.css";
+
+// -- Reset & Base --
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ffffff;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 13px;
+}
+
+a {
+  color: #0f172a;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+a:hover {
+  color: #0f172a;
+  text-decoration: none;
+}
+
+// -- Design Tokens --
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --muted-bg: #fafafa;
+  --muted-text: #64748b;
+  --border: #e5e7eb;
+  --primary: #059669;
+  --primary-fg: #ffffff;
+  --primary-hover: #047857;
+  --primary-light: #ecfdf5;
+  --destructive: #ef4444;
+  --success: #22c55e;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e5e7eb;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --radius: 6px;
+  --radius-lg: 10px;
+}
+
+// -- Button classes --
+.btn-primary {
+  background: #059669 !important;
+  border-color: #059669 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  padding: 0.375rem 0.875rem !important;
+  font-size: 13px !important;
+
+  &:hover {
+    background: #047857 !important;
+    border-color: #047857 !important;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+  }
+}
+
+.btn-ghost {
+  background: transparent !important;
+  border: none !important;
+  color: #64748b !important;
+  border-radius: 6px !important;
+
+  &:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+}
+
+.btn-outline {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #0f172a !important;
+  border-radius: 6px !important;
+
+  &:hover {
+    background: #fafafa !important;
+  }
+}
+
+.btn-destructive {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: white !important;
+  border-radius: 6px !important;
+
+  &:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+  }
+}
+
+// -- PrimeNG Global Overrides --
+.p-button {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+  gap: 0.375rem !important;
+  font-size: 13px !important;
+}
+
+.p-inputtext {
+  border-radius: 6px !important;
+  border-color: #e5e7eb !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  font-size: 13px !important;
+  padding: 0.5rem 0.75rem !important;
+  height: auto !important;
+  min-height: 36px !important;
+
+  &:focus {
+    border-color: #94a3b8 !important;
+    box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1) !important;
+  }
+}
+
+// -- Password component fix --
+.p-password {
+  width: 100%;
+
+  .p-password-input {
+    width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+    min-height: 36px !important;
+  }
+
+  .p-password-toggle-icon {
+    right: 0.75rem !important;
+    color: #94a3b8 !important;
+  }
+}
+
+// -- Select (native) fix --
+.select-full {
+  width: 100%;
+  padding: 0.5rem 0.75rem !important;
+  min-height: 36px !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #0f172a;
+  background: white;
+  appearance: auto;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1);
+  }
+}
+
+// -- Input full width fix --
+.input-full {
+  width: 100%;
+}
+
+.input-flex {
+  flex: 1;
+  min-width: 0;
+}
+
+// -- Table overrides --
+.p-datatable {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: #fafafa !important;
+  color: #64748b !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 500 !important;
+  padding: 0.625rem 1rem !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  border-top: none !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.625rem 1rem !important;
+  font-size: 13px !important;
+  color: #0f172a !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: #fafafa !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+.p-datatable .p-paginator-bottom {
+  border: none !important;
+  padding: 0.625rem 1rem !important;
+  background: #fafafa !important;
+  border-top: 1px solid #e5e7eb !important;
+  font-size: 11px !important;
+}
+
+// -- Dialog overrides --
+.p-dialog {
+  border-radius: 10px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #e5e7eb !important;
+
+  .p-dialog-header {
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 1rem 1.25rem !important;
+
+    .p-dialog-title {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: #0f172a !important;
+    }
+  }
+
+  .p-dialog-content {
+    padding: 1.25rem !important;
+  }
+}
+
+// -- TabView overrides --
+.p-tabview .p-tabview-nav {
+  border-bottom: 1px solid #e5e7eb !important;
+  background: transparent !important;
+
+  li {
+    .p-tabview-nav-link {
+      border: none !important;
+      border-bottom: 2px solid transparent !important;
+      background: transparent !important;
+      color: #64748b !important;
+      font-weight: 500 !important;
+      font-size: 13px !important;
+      padding: 0.625rem 0.875rem !important;
+      margin-bottom: -1px !important;
+      transition: all 0.15s !important;
+
+      &:hover {
+        color: #0f172a !important;
+        background: transparent !important;
+        border-color: transparent !important;
+        border-bottom-color: #94a3b8 !important;
+      }
+    }
+
+    &.p-highlight .p-tabview-nav-link {
+      color: #0f172a !important;
+      border-bottom-color: #0f172a !important;
+      background: transparent !important;
+    }
+  }
+}
+
+.p-tabview .p-tabview-panels {
+  background: transparent !important;
+  padding: 0.875rem 0 0 0 !important;
+}
+
+// -- Toast overrides --
+.p-toast {
+  max-width: 320px !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+
+  .p-toast-message {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e5e7eb !important;
+    background: white !important;
+    color: #0f172a !important;
+    overflow: hidden !important;
+    margin-bottom: 0.375rem !important;
+  }
+
+  .p-toast-message-content {
+    padding: 0.75rem 1rem !important;
+    align-items: flex-start !important;
+    gap: 0.625rem !important;
+  }
+
+  .p-toast-message-text {
+    margin: 0 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .p-toast-summary {
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    color: #0f172a !important;
+    display: block !important;
+    margin-bottom: 2px !important;
+  }
+
+  .p-toast-detail {
+    font-size: 12px !important;
+    color: #64748b !important;
+    display: block !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .p-toast-icon-close {
+    color: #94a3b8 !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    flex-shrink: 0 !important;
+
+    &:hover {
+      color: #0f172a !important;
+      background: #f1f5f9 !important;
+      border-radius: 4px !important;
+    }
+  }
+
+  // Colored left border per severity
+  .p-toast-message-success {
+    border-left: 3px solid #22c55e !important;
+  }
+  .p-toast-message-info {
+    border-left: 3px solid #3b82f6 !important;
+  }
+  .p-toast-message-warn {
+    border-left: 3px solid #f59e0b !important;
+  }
+  .p-toast-message-error {
+    border-left: 3px solid #ef4444 !important;
+  }
+}
+
+// -- Confirm dialog overrides --
+.p-confirmdialog {
+  .p-dialog {
+    max-width: 400px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  .p-dialog-header {
+    padding: 1.25rem 1.5rem !important;
+    border-bottom: 1px solid #e5e7eb !important;
+
+    .p-dialog-title {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: #0f172a !important;
+    }
+
+    .p-dialog-header-icon {
+      width: 28px !important;
+      height: 28px !important;
+      color: #94a3b8 !important;
+
+      &:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+      }
+    }
+  }
+
+  .p-dialog-content {
+    padding: 1.5rem !important;
+  }
+
+  .p-confirm-dialog-icon {
+    color: #ef4444 !important;
+    font-size: 20px !important;
+    margin-right: 0.75rem !important;
+  }
+
+  .p-confirm-dialog-message {
+    font-size: 13px !important;
+    color: #334155 !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+  }
+
+  .p-dialog-footer {
+    padding: 1.25rem 1.5rem 1.5rem !important;
+    border-top: 1px solid #e5e7eb !important;
+    display: flex !important;
+    gap: 0.75rem !important;
+    justify-content: flex-end !important;
+  }
+}
+
+.p-confirm-dialog-reject {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #0f172a !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1.25rem !important;
+  min-width: 100px !important;
+
+  &:hover {
+    background: #fafafa !important;
+    border-color: #cbd5e1 !important;
+  }
+}
+
+.p-confirm-dialog-accept {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: white !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1.25rem !important;
+  min-width: 100px !important;
+
+  &:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+  }
+}
+
+// -- Page Layout (shared across pages) --
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .page-subtitle {
+    color: #94a3b8;
+    font-size: 13px;
+    margin: 4px 0 0 0;
+  }
+}
+
+.page-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+// -- Stats grid --
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  display: block;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.stat-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  i {
+    font-size: 32px;
+    color: #64748b;
+  }
+}
+
+// -- Section header --
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+
+  h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+  }
+}
+
+// -- File table cells --
+.file-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.file-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.file-name {
+  font-weight: 500;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  font-size: 13px;
+}
+
+.text-muted {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #475569;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+// -- Status badge --
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #cbd5e1;
+  }
+
+  &.status-actif {
+    color: #16a34a;
+    &::before { background: #22c55e; }
+  }
+
+  &.status-partage {
+    color: #64748b;
+    &::before { background: #94a3b8; }
+  }
+}
+
+// -- Action buttons --
+.actions-cell {
+  text-align: center;
+}
+
+.action-btn {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  color: #64748b !important;
+  background: transparent !important;
+  border: none !important;
+
+  &:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+}
+
+.action-btn-danger {
+  &:hover {
+    background: #fef2f2 !important;
+    color: #ef4444 !important;
+  }
+}
+
+// -- Share dialog form --
+.partage-form {
+  .champ {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.875rem;
+
+    label {
+      margin-bottom: 4px;
+      font-weight: 500;
+      color: #64748b;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+.partage-file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.lien-resultat {
+  margin-top: 0.875rem;
+  padding: 0.875rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+
+  label {
+    font-weight: 500;
+    color: #64748b;
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.lien-copie {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  input {
+    flex: 1;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+}
+
+.mot-de-passe-info {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.recherche-utilisateur {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+}
+
+.utilisateur-trouve {
+  padding: 0.875rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-top: 0.375rem;
+}
+
+.utilisateur-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  .utilisateur-email {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+  }
+}
+
+.user-found-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #059669;
+  color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+// -- Upload progress bar --
+.upload-progress {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 1rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.upload-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.upload-progress-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  i {
+    font-size: 14px;
+    color: #059669;
+    flex-shrink: 0;
+  }
+}
+
+.upload-progress-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-progress-percent {
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.upload-progress-bar {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.upload-progress-fill {
+  height: 100%;
+  background: #059669;
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+// -- Utility --
+.w-full {
+  width: 100%;
+}

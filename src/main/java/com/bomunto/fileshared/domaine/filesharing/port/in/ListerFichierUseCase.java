@@ -1,5 +1,6 @@
 package com.bomunto.fileshared.domaine.filesharing.port.in;
 
+import com.bomunto.fileshared.domaine.common.PageResult;
 import com.bomunto.fileshared.domaine.filesharing.Fichier;
 
 import java.util.List;
@@ -13,4 +14,5 @@ public interface ListerFichierUseCase {
 
     List<Fichier> listerFichiers(UUID proprietaireId);
     List<Fichier> listerFichiersPartagesAvecMoi(UUID utilisateurId);
+    PageResult<Fichier> listerFichiersPagines(UUID proprietaireId, int page, int size);
 }

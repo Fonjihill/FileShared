@@ -34,6 +34,9 @@ public class LienPartageJpaEntity extends JpaEntityAbstract {
     @Column(name = "createur_id", nullable = false)
     private UUID createurId;
 
+    @Column(name = "mot_de_passe")
+    private String motDePasse;
+
     public LienPartageJpaEntity() {
     }
 
@@ -62,4 +65,6 @@ public class LienPartageJpaEntity extends JpaEntityAbstract {
     public void setActif(boolean actif) { this.actif = actif; }
     public UUID getCreateurId() { return createurId; }
     public void setCreateurId(UUID createurId) { this.createurId = createurId; }
+    public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
 }

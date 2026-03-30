@@ -11,7 +11,8 @@ public final class LienPartageMapper {
         return new LienPartage(
                 jpa.getId(), jpa.getFichierId(), jpa.getToken(),
                 jpa.getPermission(), jpa.getExpiration(), jpa.isActif(),
-                jpa.getCreateurId(), jpa.getCreatedAt(), jpa.getUpdatedAt()
+                jpa.getCreateurId(), jpa.getMotDePasse(),
+                jpa.getCreatedAt(), jpa.getUpdatedAt()
         );
     }
 
@@ -24,6 +25,7 @@ public final class LienPartageMapper {
         jpa.setExpiration(domain.getExpiration());
         jpa.setActif(domain.isActif());
         jpa.setCreateurId(domain.getCreateurId());
+        jpa.setMotDePasse(domain.getMotDePasse());
         return jpa;
     }
 }

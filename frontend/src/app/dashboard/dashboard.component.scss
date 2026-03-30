@@ -1,100 +1,69 @@
-.dashboard-container {
-  min-height: 100vh;
-  background: #f5f7fa;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 2rem;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-
-  h2 {
-    margin: 0;
-    color: #2c3e50;
-
-    i {
-      margin-right: 0.5rem;
-    }
-  }
-}
-
-.topbar-right {
+// Dashboard-specific: drop overlay and preview
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
 }
 
-.user-info {
-  color: #2c3e50;
-  font-weight: 500;
+.drop-overlay-content {
+  text-align: center;
 
   i {
-    margin-right: 0.3rem;
-  }
-}
-
-.user-role {
-  color: #7f8c8d;
-  font-weight: 400;
-  font-size: 0.85rem;
-}
-
-.content {
-  padding: 1.5rem 2rem;
-}
-
-:host ::ng-deep .p-toolbar {
-  margin-bottom: 1rem;
-  border-radius: 6px;
-}
-
-:host ::ng-deep .p-datatable {
-  .p-datatable-thead > tr > th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #2c3e50;
-  }
-}
-
-.partage-form {
-  .champ {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-
-    label {
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #2c3e50;
-    }
-  }
-}
-
-.lien-resultat {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: #f0f9f4;
-  border-radius: 6px;
-  border: 1px solid #27ae60;
-
-  label {
-    font-weight: 600;
-    color: #27ae60;
+    font-size: 48px;
+    color: #94a3b8;
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
   }
 }
 
-.lien-copie {
+.page-wrapper {
+  position: relative;
+}
+
+.preview-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  min-height: 300px;
+}
 
-  input {
-    flex: 1;
-    font-size: 0.85rem;
+.preview-image {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 8px;
+}
+
+.preview-pdf {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-radius: 8px;
+}
+
+.preview-unsupported {
+  color: #94a3b8;
+  font-size: 13px;
+  text-align: center;
+}
+
+.file-name-clickable {
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #334155;
   }
 }

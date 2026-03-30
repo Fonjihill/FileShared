@@ -10,10 +10,11 @@ import com.bomunto.fileshared.domaine.identity.port.out.TokenProvider;
 import com.bomunto.fileshared.domaine.identity.port.out.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AuthServiceImpl implements RegisterUseCase, LoginUseCase, RefreshTokenUseCase, GetProfilUseCase {
+public class AuthServiceImpl implements RegisterUseCase, LoginUseCase, RefreshTokenUseCase, GetProfilUseCase, RechercherUtilisateurUseCase {
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordHasher passwordHasher;
     private final TokenProvider tokenProvider;
@@ -78,5 +79,10 @@ public class AuthServiceImpl implements RegisterUseCase, LoginUseCase, RefreshTo
     public Utilisateur getProfil(UUID utilisateurId) {
         return utilisateurRepository.findById(utilisateurId)
                 .orElseThrow(IdentifiantsInvalidesException::new);
+    }
+
+    @Override
+    public Optional<Utilisateur> rechercherParEmail(String email) {
+        return utilisateurRepository.findByEmail(email);
     }
 }

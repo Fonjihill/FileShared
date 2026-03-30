@@ -3,6 +3,7 @@ package com.bomunto.fileshared.infrastructure.web.common.exception;
 import com.bomunto.fileshared.domaine.filesharing.exception.AccesRefuseException;
 import com.bomunto.fileshared.domaine.filesharing.exception.FichierIntrouvableException;
 import com.bomunto.fileshared.domaine.filesharing.exception.LienExpireException;
+import com.bomunto.fileshared.domaine.filesharing.exception.QuotaDepasseException;
 import com.bomunto.fileshared.domaine.identity.exception.EmailDejaUtiliseException;
 import com.bomunto.fileshared.domaine.identity.exception.IdentifiantsInvalidesException;
 import com.bomunto.fileshared.infrastructure.web.common.dto.ErrorResponse;
@@ -42,6 +43,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LienExpireException.class)
     public ResponseEntity<ErrorResponse> handleLienExpire(LienExpireException ex) {
         return ResponseEntity.status(HttpStatus.GONE)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(QuotaDepasseException.class)
+    public ResponseEntity<ErrorResponse> handleQuotaDepasse(QuotaDepasseException ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 

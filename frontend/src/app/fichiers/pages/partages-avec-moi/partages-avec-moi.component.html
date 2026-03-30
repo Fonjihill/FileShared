@@ -1,0 +1,55 @@
+<!-- Page header -->
+<div class="page-header">
+  <div>
+    <h1>Partages avec moi</h1>
+    <p class="page-subtitle">Fichiers que d'autres utilisateurs ont partage avec vous</p>
+  </div>
+  <div class="page-actions">
+    <button pButton icon="pi pi-refresh" class="btn-ghost" (click)="chargerFichiers()"
+            pTooltip="Rafraichir"></button>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div *ngIf="fichiers.length === 0 && !chargement" class="empty-state">
+  <div class="empty-icon">
+    <i class="pi pi-share-alt"></i>
+  </div>
+  <h3>Aucun fichier partage</h3>
+  <p>Les fichiers que d'autres utilisateurs partagent avec vous apparaitront ici.</p>
+</div>
+
+<!-- Table -->
+<p-table *ngIf="fichiers.length > 0 || chargement" [value]="fichiers" [paginator]="true" [rows]="10"
+         [loading]="chargement" [rowHover]="true"
+         emptyMessage="Aucun fichier partage."
+         styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Nom</th>
+      <th style="width: 110px;">Taille</th>
+      <th style="width: 140px;">Type</th>
+      <th style="width: 150px;">Date</th>
+      <th style="width: 100px; text-align: center;">Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-fichier>
+    <tr>
+      <td>
+        <div class="file-name-cell">
+          <i [class]="getIconeFichier(fichier.typeMime)" class="file-icon"></i>
+          <span class="file-name" [title]="fichier.nomOriginal">{{ fichier.nomOriginal }}</span>
+        </div>
+      </td>
+      <td class="text-muted">{{ formatTaille(fichier.taille) }}</td>
+      <td><span class="type-badge">{{ fichier.typeMime | slice:0:20 }}</span></td>
+      <td class="text-muted">{{ fichier.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+      <td class="actions-cell">
+        <button pButton icon="pi pi-download" class="p-button-rounded p-button-text action-btn"
+                pTooltip="Telecharger" (click)="telecharger(fichier)"></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-toast></p-toast>

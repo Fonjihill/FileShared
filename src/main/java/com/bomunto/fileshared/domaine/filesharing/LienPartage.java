@@ -17,6 +17,7 @@ public class LienPartage extends EntityAbstract {
     private Instant expiration;
     private boolean actif;
     private UUID createurId;
+    private String motDePasse;
 
     /*
         * Constructeur par défaut de LienPartage
@@ -38,6 +39,23 @@ public class LienPartage extends EntityAbstract {
         this.expiration = expiration;
         this.actif = actif;
         this.createurId = createurId;
+    }
+
+    /*
+        * Constructeur de LienPartage avec mot de passe
+     */
+    public LienPartage(UUID id, UUID fichierId, String token, Permission permission,
+                       Instant expiration, boolean actif, UUID createurId,
+                       String motDePasse, Instant createdAt, Instant updatedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
+        this.fichierId = fichierId;
+        this.token = token;
+        this.permission = permission;
+        this.expiration = expiration;
+        this.actif = actif;
+        this.createurId = createurId;
+        this.motDePasse = motDePasse;
     }
 
     public UUID getId() {
@@ -66,6 +84,14 @@ public class LienPartage extends EntityAbstract {
 
     public UUID getCreateurId() {
         return createurId;
+    }
+
+    public String getMotDePasse() {
+        return motDePasse;
+    }
+
+    public boolean estProtegePArMotDePasse() {
+        return motDePasse != null && !motDePasse.isBlank();
     }
 
     /*

@@ -12,6 +12,7 @@ public record LienPartageDto(
         String permission,
         Instant expiration,
         boolean actif,
+        boolean protegeParMotDePasse,
         Instant createdAt
 ) {
     public static LienPartageDto from(LienPartage lien) {
@@ -22,6 +23,7 @@ public record LienPartageDto(
                 lien.getPermission().name(),
                 lien.getExpiration(),
                 lien.isActif(),
+                lien.estProtegePArMotDePasse(),
                 lien.getCreatedAt()
         );
     }

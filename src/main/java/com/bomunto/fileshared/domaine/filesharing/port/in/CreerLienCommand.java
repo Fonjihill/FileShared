@@ -14,5 +14,6 @@ import java.util.UUID;
  * @param expiration    La date d'expiration du lien de partage.
  */
 public record CreerLienCommand(UUID fichierId, UUID proprietaireId,
-                               Permission permission, Instant expiration) {
+                               Permission permission, Instant expiration,
+                               String motDePasse) {
 }

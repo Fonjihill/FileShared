@@ -25,15 +25,18 @@ public class AuthController {
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final GetProfilUseCase getProfilUseCase;
+    private final RechercherUtilisateurUseCase rechercherUtilisateurUseCase;
 
     public AuthController(RegisterUseCase registerUseCase,
                           LoginUseCase loginUseCase,
                           RefreshTokenUseCase refreshTokenUseCase,
-                          GetProfilUseCase getProfilUseCase) {
+                          GetProfilUseCase getProfilUseCase,
+                          RechercherUtilisateurUseCase rechercherUtilisateurUseCase) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.getProfilUseCase = getProfilUseCase;
+        this.rechercherUtilisateurUseCase = rechercherUtilisateurUseCase;
     }
 
     // ────────────────────────────────────────────
@@ -90,5 +93,16 @@ public class AuthController {
     @Operation(summary = "Déconnexion (côté client, supprime les tokens)")
     public ResponseEntity<Void> logout() {
         return ResponseEntity.ok().build();
+    }
+
+    // ────────────────────────────────────────────
+    // 6. RECHERCHE PAR EMAIL — GET /auth/users/search?email=xxx
+    // ────────────────────────────────────────────
+    @GetMapping("/users/search")
+    @Operation(summary = "Chercher un utilisateur par email")
+    public ResponseEntity<UtilisateurDto> searchByEmail(@RequestParam String email) {
+        return rechercherUtilisateurUseCase.rechercherParEmail(email)
+                .map(u -> ResponseEntity.ok(UtilisateurDto.from(u)))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

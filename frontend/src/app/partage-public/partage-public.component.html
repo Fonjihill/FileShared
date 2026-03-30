@@ -1,0 +1,86 @@
+<div class="partage-page">
+  <!-- Chargement -->
+  <div *ngIf="chargement" class="partage-card">
+    <div class="partage-loading">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Chargement du fichier...</p>
+    </div>
+  </div>
+
+  <!-- Erreur (lien invalide/expire) -->
+  <div *ngIf="erreur && !chargement" class="partage-card">
+    <div class="partage-error">
+      <div class="error-icon">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <h2>Lien indisponible</h2>
+      <p>{{ erreur }}</p>
+    </div>
+  </div>
+
+  <!-- Contenu du lien valide -->
+  <div *ngIf="lienInfo && !chargement && !erreur" class="partage-card">
+    <!-- Header avec logo -->
+    <div class="partage-header">
+      <div class="partage-brand">
+        <div class="brand-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3C2 1.89543 2.89543 1 4 1H8.58579C8.851 1 9.10536 1.10536 9.29289 1.29289L13.7071 5.70711C13.8946 5.89464 14 6.149 14 6.41421V13C14 14.1046 13.1046 15 12 15H4C2.89543 15 2 14.1046 2 13V3Z" fill="white"/>
+            <path d="M9 1V5C9 5.55228 9.44772 6 10 6H14" fill="white" fill-opacity="0.5"/>
+            <path d="M7 9L9.5 11.5M9.5 11.5L12 9M9.5 11.5V7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>FileShared</span>
+      </div>
+    </div>
+
+    <!-- Info fichier -->
+    <div class="partage-file-info">
+      <div class="file-icon-large">
+        <i [class]="getIconeFichier()"></i>
+      </div>
+      <h2>{{ lienInfo.nom }}</h2>
+      <p class="file-meta">{{ formatTaille(lienInfo.taille) }} &middot; {{ lienInfo.typeMime }}</p>
+    </div>
+
+    <!-- Preview (si lecture et previewable) -->
+    <div *ngIf="previewUrl" class="partage-preview">
+      <img [src]="previewUrl" [alt]="lienInfo.nom">
+    </div>
+    <div *ngIf="previewPdfUrl" class="partage-preview">
+      <iframe [src]="previewPdfUrl"></iframe>
+    </div>
+    <div *ngIf="previewChargement" class="partage-preview-loading">
+      <i class="pi pi-spin pi-spinner"></i>
+    </div>
+
+    <!-- Mot de passe (si protege) -->
+    <div *ngIf="lienInfo.protegeParMotDePasse" class="partage-password">
+      <div class="password-lock">
+        <i class="pi pi-lock"></i>
+        <span>Ce fichier est protege par un mot de passe</span>
+      </div>
+      <div class="password-field">
+        <input type="password" pInputText [(ngModel)]="motDePasse"
+               placeholder="Entrez le mot de passe" class="w-full"
+               (keyup.enter)="telecharger()">
+      </div>
+    </div>
+
+    <!-- Bouton telecharger -->
+    <div *ngIf="lienInfo.permission === 'TELECHARGEMENT' || lienInfo.protegeParMotDePasse" class="partage-actions">
+      <button pButton label="Telecharger" icon="pi pi-download"
+              class="btn-primary w-full"
+              [loading]="telechargementEnCours"
+              [disabled]="lienInfo.protegeParMotDePasse && !motDePasse"
+              (click)="telecharger()">
+      </button>
+    </div>
+
+    <!-- Message lecture seule -->
+    <div *ngIf="lienInfo.permission === 'LECTURE' && !lienInfo.protegeParMotDePasse && !estPreviewable(lienInfo.typeMime)" class="partage-lecture-info">
+      <i class="pi pi-eye"></i>
+      <span>Ce fichier est en lecture seule. L'apercu n'est pas disponible pour ce type de fichier.</span>
+    </div>
+  </div>
+</div>

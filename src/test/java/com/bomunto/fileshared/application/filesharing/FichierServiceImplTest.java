@@ -8,10 +8,14 @@ import com.bomunto.fileshared.domaine.filesharing.exception.FichierIntrouvableEx
 import com.bomunto.fileshared.domaine.filesharing.exception.LienExpireException;
 import com.bomunto.fileshared.domaine.filesharing.port.in.CreerLienCommand;
 import com.bomunto.fileshared.domaine.filesharing.port.in.PartagerCommand;
+import com.bomunto.fileshared.domaine.filesharing.port.out.ActiviteLogRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FichierRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FileStorage;
 import com.bomunto.fileshared.domaine.filesharing.port.out.LienPartageRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.PartageUtilisateurRepository;
+import com.bomunto.fileshared.domaine.identity.port.out.EmailService;
+import com.bomunto.fileshared.domaine.identity.port.out.PasswordHasher;
+import com.bomunto.fileshared.domaine.identity.port.out.UtilisateurRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +60,19 @@ class FichierServiceImplTest {
     @Mock                               // Faux repository liens de partage
     private LienPartageRepository lienPartageRepository;
 
-    @InjectMocks                        // Cree le service avec les 4 mocks injectes
+    @Mock
+    private PasswordHasher passwordHasher;
+
+    @Mock
+    private ActiviteLogRepository activiteLogRepository;
+
+    @Mock
+    private EmailService emailService;
+
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
+
+    @InjectMocks
     private FichierServiceImpl service;
 
     // --- Utilitaire ---
@@ -283,7 +299,7 @@ class FichierServiceImplTest {
         UUID fichierId = UUID.randomUUID();
         UUID proprietaireId = UUID.randomUUID();
         Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
-        CreerLienCommand command = new CreerLienCommand(fichierId, proprietaireId, Permission.TELECHARGEMENT, Instant.now().plusSeconds(3600));
+        CreerLienCommand command = new CreerLienCommand(fichierId, proprietaireId, Permission.TELECHARGEMENT, Instant.now().plusSeconds(3600), null);
 
         when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
         when(lienPartageRepository.save(any(LienPartage.class))).thenAnswer(i -> i.getArgument(0));
@@ -303,7 +319,7 @@ class FichierServiceImplTest {
         UUID proprietaireId = UUID.randomUUID();
         UUID intrusId = UUID.randomUUID();
         Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
-        CreerLienCommand command = new CreerLienCommand(fichierId, intrusId, Permission.TELECHARGEMENT, Instant.now().plusSeconds(3600));
+        CreerLienCommand command = new CreerLienCommand(fichierId, intrusId, Permission.TELECHARGEMENT, Instant.now().plusSeconds(3600), null);
 
         when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
 

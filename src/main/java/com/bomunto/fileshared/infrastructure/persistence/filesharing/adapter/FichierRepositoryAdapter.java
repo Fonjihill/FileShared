@@ -1,10 +1,14 @@
 package com.bomunto.fileshared.infrastructure.persistence.filesharing.adapter;
 
+import com.bomunto.fileshared.domaine.common.PageResult;
 import com.bomunto.fileshared.domaine.filesharing.Fichier;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FichierRepository;
 import com.bomunto.fileshared.infrastructure.persistence.filesharing.entity.FichierJpaEntity;
 import com.bomunto.fileshared.infrastructure.persistence.filesharing.jpa.JpaFichierRepository;
 import com.bomunto.fileshared.infrastructure.persistence.filesharing.mapper.FichierMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -38,6 +42,21 @@ public class FichierRepositoryAdapter implements FichierRepository {
         return jpa.findByProprietaireId(proprietaireId).stream()
                 .map(FichierMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public PageResult<Fichier> findByProprietaireIdPagine(UUID proprietaireId, int page, int size) {
+        Page<FichierJpaEntity> jpaPage = jpa.findByProprietaireId(
+                proprietaireId,
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
+        );
+        List<Fichier> fichiers = jpaPage.getContent().stream().map(FichierMapper::toDomain).toList();
+        return new PageResult<>(fichiers, page, size, jpaPage.getTotalElements(), jpaPage.getTotalPages());
+    }
+
+    @Override
+    public long calculerEspaceUtilise(UUID proprietaireId) {
+        return jpa.calculerEspaceUtilise(proprietaireId);
     }
 
     @Override

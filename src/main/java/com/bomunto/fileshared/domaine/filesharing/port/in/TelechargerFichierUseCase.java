@@ -9,4 +9,5 @@ public interface TelechargerFichierUseCase {
 
     FichierContenu telecharger(TelechargerCommand command);
     FichierContenu telechargerParToken(String token);
+    FichierContenu telechargerParTokenAvecMotDePasse(String token, String motDePasse);
 }

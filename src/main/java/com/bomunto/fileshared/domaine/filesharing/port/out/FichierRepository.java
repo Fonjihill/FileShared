@@ -1,5 +1,6 @@
 package com.bomunto.fileshared.domaine.filesharing.port.out;
 
+import com.bomunto.fileshared.domaine.common.PageResult;
 import com.bomunto.fileshared.domaine.filesharing.Fichier;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface FichierRepository {
     Fichier save(Fichier fichier);
     Optional<Fichier> findById(UUID id);
     List<Fichier> findByProprietaireId(UUID proprietaireId);
+    PageResult<Fichier> findByProprietaireIdPagine(UUID proprietaireId, int page, int size);
+    long calculerEspaceUtilise(UUID proprietaireId);
     void deleteById(UUID id);
 }

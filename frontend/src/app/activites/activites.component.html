@@ -1,0 +1,26 @@
+<div class="page-header">
+  <div>
+    <h1>Historique d'activite</h1>
+    <p class="page-subtitle">Vos actions recentes</p>
+  </div>
+</div>
+
+<div class="activites-list" *ngIf="activites.length > 0">
+  <div *ngFor="let activite of activites" class="activite-item">
+    <div class="activite-icon" [ngClass]="getActiviteIconClass(activite.action)">
+      <i [class]="getActiviteIcon(activite.action)"></i>
+    </div>
+    <div class="activite-content">
+      <p class="activite-detail">{{ activite.details }}</p>
+      <span class="activite-date">{{ activite.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="activites.length === 0 && !chargement" class="activites-empty">
+  <div class="empty-icon">
+    <i class="pi pi-clock"></i>
+  </div>
+  <p class="empty-title">Aucune activite</p>
+  <p class="empty-subtitle">Vos actions apparaitront ici</p>
+</div>

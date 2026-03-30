@@ -21,4 +21,26 @@ export interface LienPartageDto {
 export interface CreerLienRequest {
   permission: string;
   expiration?: string;
+  motDePasse?: string;
+}
+
+export interface PageResult<T> {
+  contenu: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface PreviewData {
+  nom: string;
+  typeMime: string;
+  url: string;
+}
+
+export interface ActiviteLogDto {
+  id: string;
+  action: string;
+  details: string;
+  createdAt: string;
 }

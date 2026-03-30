@@ -109,8 +109,10 @@ class FichierControllerIntegrationTest {
                         .header("Authorization", "Bearer " + token)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.contenu").isArray())
+                .andExpect(jsonPath("$.contenu.length()").value(1))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     // ================================================================

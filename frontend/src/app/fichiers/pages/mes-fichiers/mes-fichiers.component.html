@@ -1,0 +1,184 @@
+<!-- Page header -->
+<div class="page-header">
+  <div>
+    <h1>Mes fichiers</h1>
+    <p class="page-subtitle">Gerez vos fichiers uploades</p>
+  </div>
+  <div class="page-actions">
+    <input type="file" #fileInput style="display:none" (change)="onFichierSelectionne($event)">
+    <button pButton label="Envoyer un fichier" icon="pi pi-upload"
+            class="btn-primary" (click)="fileInput.click()"></button>
+    <button pButton icon="pi pi-refresh" class="btn-ghost" (click)="chargerFichiers()"
+            pTooltip="Rafraichir" style="margin-left: 0.5rem;"></button>
+  </div>
+</div>
+
+<!-- Upload progress -->
+<div *ngIf="uploadEnCours" class="upload-progress">
+  <div class="upload-progress-info">
+    <div class="upload-progress-left">
+      <i class="pi pi-file"></i>
+      <span class="upload-progress-name">{{ uploadNomFichier }}</span>
+    </div>
+    <span class="upload-progress-percent">{{ uploadProgression }}%</span>
+  </div>
+  <div class="upload-progress-bar">
+    <div class="upload-progress-fill" [style.width.%]="uploadProgression"></div>
+  </div>
+</div>
+
+<!-- Drop zone -->
+<div class="drop-zone"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave($event)"
+     (drop)="onDrop($event)"
+     [class.drag-active]="isDragOver">
+  <i class="pi pi-cloud-upload"></i>
+  <p>Glissez vos fichiers ici ou <span class="drop-zone-link" (click)="fileInput.click()">parcourez</span></p>
+</div>
+
+<!-- Table -->
+<p-table [value]="fichiers" [paginator]="true" [rows]="10"
+         [loading]="chargement" [rowHover]="true"
+         emptyMessage="Aucun fichier."
+         styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Nom</th>
+      <th style="width: 110px;">Taille</th>
+      <th style="width: 140px;">Type</th>
+      <th style="width: 150px;">Date</th>
+      <th style="width: 100px;">Statut</th>
+      <th style="width: 180px; text-align: center;">Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-fichier>
+    <tr>
+      <td>
+        <div class="file-name-cell">
+          <i [class]="getIconeFichier(fichier.typeMime)" class="file-icon"></i>
+          <span class="file-name file-name-clickable" [title]="fichier.nomOriginal"
+                (click)="ouvrirPreview(fichier)">{{ fichier.nomOriginal }}</span>
+        </div>
+      </td>
+      <td class="text-muted">{{ formatTaille(fichier.taille) }}</td>
+      <td><span class="type-badge">{{ fichier.typeMime | slice:0:20 }}</span></td>
+      <td class="text-muted">{{ fichier.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+      <td><span class="status-badge status-actif">{{ fichier.statut }}</span></td>
+      <td class="actions-cell">
+        <button pButton icon="pi pi-download" class="p-button-rounded p-button-text action-btn"
+                pTooltip="Telecharger" (click)="telecharger(fichier)"></button>
+        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text action-btn"
+                pTooltip="Renommer" (click)="ouvrirRenommer(fichier)"></button>
+        <button pButton icon="pi pi-share-alt" class="p-button-rounded p-button-text action-btn"
+                pTooltip="Partager" (click)="ouvrirDialogPartage(fichier)"></button>
+        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text action-btn action-btn-danger"
+                pTooltip="Supprimer" (click)="confirmerSuppression(fichier)"></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Preview dialog -->
+<p-dialog header="Apercu" [(visible)]="previewVisible" [modal]="true"
+          [style]="{width: '80vw', maxWidth: '900px'}" [closable]="true"
+          (onHide)="fermerPreview()">
+  <div *ngIf="previewData" class="preview-container">
+    <img *ngIf="previewImageUrl"
+         [src]="previewImageUrl" [alt]="previewData.nom" class="preview-image">
+    <iframe *ngIf="previewPdfUrl"
+            [src]="previewPdfUrl" class="preview-pdf"></iframe>
+    <p *ngIf="!previewImageUrl && !previewPdfUrl"
+       class="preview-unsupported">
+      Apercu non disponible pour ce type de fichier
+    </p>
+  </div>
+</p-dialog>
+
+<!-- Rename dialog -->
+<p-dialog header="Renommer le fichier" [(visible)]="renommerVisible" [modal]="true"
+          [style]="{width: '400px'}">
+  <div class="champ">
+    <label>Nouveau nom</label>
+    <input pInputText [(ngModel)]="nouveauNom" class="w-full" (keyup.enter)="renommer()">
+  </div>
+  <div style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+    <button pButton label="Annuler" class="btn-outline" (click)="renommerVisible = false"></button>
+    <button pButton label="Renommer" class="btn-primary" [disabled]="!nouveauNom.trim()"
+            (click)="renommer()"></button>
+  </div>
+</p-dialog>
+
+<!-- Share dialog (same as dashboard) -->
+<p-dialog header="Partager un fichier" [(visible)]="dialogPartageVisible"
+          [modal]="true" [style]="{width: '550px'}" [closable]="true"
+          [draggable]="false" [resizable]="false">
+  <div *ngIf="fichierSelectionne" class="partage-form">
+    <p-tabView>
+      <p-tabPanel header="Par lien" leftIcon="pi pi-link">
+        <div class="champ">
+          <label>Permission</label>
+          <select [(ngModel)]="permissionPartage" class="p-inputtext select-full">
+            <option value="LECTURE">Lecture seule</option>
+            <option value="TELECHARGEMENT">Telechargement</option>
+          </select>
+        </div>
+        <div class="champ">
+          <label>Expiration (optionnel)</label>
+          <input type="datetime-local" pInputText [(ngModel)]="expirationPartage" class="input-full">
+        </div>
+        <div class="champ">
+          <label>Mot de passe (optionnel)</label>
+          <p-password [(ngModel)]="motDePassePartage" [feedback]="false" [toggleMask]="true"
+                      styleClass="w-full" inputStyleClass="w-full" placeholder="Optionnel"></p-password>
+        </div>
+        <div *ngIf="!lienPartage" style="margin-top: 1rem;">
+          <button pButton label="Creer le lien" icon="pi pi-link" class="btn-primary btn-full"
+                  [loading]="creationLienEnCours" (click)="creerLienPartage()"></button>
+        </div>
+        <div *ngIf="lienPartage" class="lien-resultat">
+          <label>Lien de partage :</label>
+          <div class="lien-copie">
+            <input pInputText [value]="lienPartage" readonly class="input-full">
+            <button pButton icon="pi pi-copy" class="btn-outline" (click)="copierLien()"></button>
+          </div>
+          <p *ngIf="lienProtegeParMotDePasse" class="mot-de-passe-info">
+            <i class="pi pi-lock"></i> Protege par mot de passe
+          </p>
+        </div>
+      </p-tabPanel>
+      <p-tabPanel header="Avec un utilisateur" leftIcon="pi pi-user">
+        <div class="champ">
+          <label>Email</label>
+          <div class="recherche-utilisateur">
+            <input type="email" pInputText [(ngModel)]="emailRecherche" placeholder="email@exemple.com"
+                   class="input-flex" (keyup.enter)="rechercherUtilisateur()">
+            <button pButton icon="pi pi-search" class="btn-outline" [loading]="rechercheEnCours"
+                    (click)="rechercherUtilisateur()"></button>
+          </div>
+        </div>
+        <div *ngIf="utilisateurTrouve" class="utilisateur-trouve">
+          <div class="utilisateur-info">
+            <div class="user-found-avatar">{{ utilisateurTrouve.username.charAt(0).toUpperCase() }}</div>
+            <div>
+              <strong>{{ utilisateurTrouve.username }}</strong>
+              <span class="utilisateur-email">{{ utilisateurTrouve.email }}</span>
+            </div>
+          </div>
+          <div class="champ" style="margin-top: 1rem;">
+            <label>Permission</label>
+            <select [(ngModel)]="permissionPartageUtilisateur" class="p-inputtext select-full">
+              <option value="LECTURE">Lecture seule</option>
+              <option value="TELECHARGEMENT">Telechargement</option>
+            </select>
+          </div>
+          <button pButton label="Partager" icon="pi pi-share-alt" class="btn-primary btn-full"
+                  style="margin-top: 1rem;" [loading]="partageUtilisateurEnCours"
+                  (click)="partagerAvecUtilisateur()"></button>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</p-dialog>
+<p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>

@@ -9,6 +9,8 @@ public record CreerLienRequest(
         @NotNull(message = "La permission est obligatoire")
         Permission permission,
 
-        Instant expiration
+        Instant expiration,
+
+        String motDePasse
 ) {
 }

@@ -13,4 +13,5 @@ public interface PartagerFichierUseCase {
     LienPartage partagerParLien(CreerLienCommand command);
     PartageUtilisateur partagerAvecUtilisateur(PartagerCommand command);
     void revoquerPartage(UUID partageId, UUID utilisateurId);
+    PartagesResult listerPartages(UUID fichierId, UUID proprietaireId);
 }

@@ -54,4 +54,8 @@ export class AuthService {
       })
     );
   }
+
+  rechercherUtilisateur(email: string): Observable<UtilisateurDto> {
+    return this.http.get<UtilisateurDto>(`${this.apiUrl}/users/search`, { params: { email } });
+  }
 }
