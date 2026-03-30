@@ -1,11 +1,16 @@
 package com.bomunto.fileshared.application.filesharing;
 
 import com.bomunto.fileshared.domaine.filesharing.Fichier;
+import com.bomunto.fileshared.domaine.filesharing.LienPartage;
 import com.bomunto.fileshared.domaine.filesharing.StatutFichier;
 import com.bomunto.fileshared.domaine.filesharing.exception.AccesRefuseException;
 import com.bomunto.fileshared.domaine.filesharing.exception.FichierIntrouvableException;
+import com.bomunto.fileshared.domaine.filesharing.exception.LienExpireException;
+import com.bomunto.fileshared.domaine.filesharing.port.in.CreerLienCommand;
+import com.bomunto.fileshared.domaine.filesharing.port.in.PartagerCommand;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FichierRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.FileStorage;
+import com.bomunto.fileshared.domaine.filesharing.port.out.LienPartageRepository;
 import com.bomunto.fileshared.domaine.filesharing.port.out.PartageUtilisateurRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +53,10 @@ class FichierServiceImplTest {
     @Mock                               // Faux repository partages
     private PartageUtilisateurRepository partageUtilisateurRepository;
 
-    @InjectMocks                        // Cree le service avec les 3 mocks injectes
+    @Mock                               // Faux repository liens de partage
+    private LienPartageRepository lienPartageRepository;
+
+    @InjectMocks                        // Cree le service avec les 4 mocks injectes
     private FichierServiceImpl service;
 
     // --- Utilitaire ---
@@ -263,5 +271,166 @@ class FichierServiceImplTest {
         List<Fichier> resultat = service.listerFichiersPartagesAvecMoi(destinataireId);
 
         assertThat(resultat).isEmpty();
+    }
+
+    // ================================================================
+    // partagerParLien()
+    // ================================================================
+
+    @Test
+    @DisplayName("partagerParLien - le proprietaire cree un lien de partage")
+    void partagerParLien_proprietaire_creeLien() {
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+        CreerLienCommand command = new CreerLienCommand(fichierId, proprietaireId, Permission.TELECHARGEMENT, Instant.now().plusSeconds(3600));
+
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+        when(lienPartageRepository.save(any(LienPartage.class))).thenAnswer(i -> i.getArgument(0));
+
+        LienPartage lien = service.partagerParLien(command);
+
+        assertThat(lien).isNotNull();
+        assertThat(lien.getFichierId()).isEqualTo(fichierId);
+        assertThat(lien.getPermission()).isEqualTo(Permission.TELECHARGEMENT);
+        verify(lienPartageRepository).save(any(LienPartage.class));
+    }
+
+    @Test
+    @DisplayName("partagerParLien - non proprietaire leve AccesRefuseException")
+    void partagerParLien_nonProprietaire_lanceAccesRefuse() {
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        UUID intrusId = UUID.randomUUID();
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+        CreerLienCommand command = new CreerLienCommand(fichierId, intrusId, Permission.TELECHARGEMENT, Instant.now().plusSeconds(3600));
+
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+
+        assertThatThrownBy(() -> service.partagerParLien(command))
+                .isInstanceOf(AccesRefuseException.class);
+    }
+
+    // ================================================================
+    // partagerAvecUtilisateur()
+    // ================================================================
+
+    @Test
+    @DisplayName("partagerAvecUtilisateur - le proprietaire cree un partage")
+    void partagerAvecUtilisateur_proprietaire_creePartage() {
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        UUID destinataireId = UUID.randomUUID();
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+        PartagerCommand command = new PartagerCommand(fichierId, proprietaireId, destinataireId, Permission.TELECHARGEMENT);
+
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+        when(partageUtilisateurRepository.save(any(PartageUtilisateur.class))).thenAnswer(i -> i.getArgument(0));
+
+        PartageUtilisateur partage = service.partagerAvecUtilisateur(command);
+
+        assertThat(partage).isNotNull();
+        assertThat(partage.getFichierId()).isEqualTo(fichierId);
+        assertThat(partage.getDestinataire()).isEqualTo(destinataireId);
+        assertThat(partage.getPermission()).isEqualTo(Permission.TELECHARGEMENT);
+        verify(partageUtilisateurRepository).save(any(PartageUtilisateur.class));
+    }
+
+    @Test
+    @DisplayName("partagerAvecUtilisateur - non proprietaire leve AccesRefuseException")
+    void partagerAvecUtilisateur_nonProprietaire_lanceAccesRefuse() {
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        UUID intrusId = UUID.randomUUID();
+        UUID destinataireId = UUID.randomUUID();
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+        PartagerCommand command = new PartagerCommand(fichierId, intrusId, destinataireId, Permission.TELECHARGEMENT);
+
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+
+        assertThatThrownBy(() -> service.partagerAvecUtilisateur(command))
+                .isInstanceOf(AccesRefuseException.class);
+    }
+
+    // ================================================================
+    // revoquerPartage()
+    // ================================================================
+
+    @Test
+    @DisplayName("revoquerPartage - le proprietaire supprime un partage")
+    void revoquerPartage_proprietaire_supprimePartage() {
+        UUID partageId = UUID.randomUUID();
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        UUID destinataireId = UUID.randomUUID();
+
+        PartageUtilisateur partage = new PartageUtilisateur(partageId, fichierId, destinataireId, Permission.TELECHARGEMENT, Instant.now(), Instant.now());
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+
+        when(partageUtilisateurRepository.findById(partageId)).thenReturn(Optional.of(partage));
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+
+        service.revoquerPartage(partageId, proprietaireId);
+
+        verify(partageUtilisateurRepository).delete(partageId);
+    }
+
+    @Test
+    @DisplayName("revoquerPartage - non proprietaire leve AccesRefuseException")
+    void revoquerPartage_nonProprietaire_lanceAccesRefuse() {
+        UUID partageId = UUID.randomUUID();
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        UUID intrusId = UUID.randomUUID();
+        UUID destinataireId = UUID.randomUUID();
+
+        PartageUtilisateur partage = new PartageUtilisateur(partageId, fichierId, destinataireId, Permission.TELECHARGEMENT, Instant.now(), Instant.now());
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+
+        when(partageUtilisateurRepository.findById(partageId)).thenReturn(Optional.of(partage));
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+
+        assertThatThrownBy(() -> service.revoquerPartage(partageId, intrusId))
+                .isInstanceOf(AccesRefuseException.class);
+    }
+
+    // ================================================================
+    // telechargerParToken()
+    // ================================================================
+
+    @Test
+    @DisplayName("telechargerParToken - token valide retourne le contenu du fichier")
+    void telechargerParToken_tokenValide_retourneContenu() {
+        UUID fichierId = UUID.randomUUID();
+        UUID proprietaireId = UUID.randomUUID();
+        String token = "valid-token-123";
+
+        LienPartage lien = new LienPartage(UUID.randomUUID(), fichierId, token, Permission.TELECHARGEMENT,
+                Instant.now().plusSeconds(3600), true, proprietaireId, Instant.now(), Instant.now());
+        Fichier fichier = creerFichier(fichierId, proprietaireId, StatutFichier.ACTIF);
+
+        when(lienPartageRepository.findByToken(token)).thenReturn(Optional.of(lien));
+        when(fichierRepository.findById(fichierId)).thenReturn(Optional.of(fichier));
+        when(fileStorage.recuperer(fichier.getCheminStockage())).thenReturn(new ByteArrayInputStream("data".getBytes()));
+
+        FichierContenu contenu = service.telechargerParToken(token);
+
+        assertThat(contenu).isNotNull();
+        assertThat(contenu.nom()).isEqualTo("rapport.pdf");
+        assertThat(contenu.typeMime()).isEqualTo("application/pdf");
+    }
+
+    @Test
+    @DisplayName("telechargerParToken - token expire leve LienExpireException")
+    void telechargerParToken_tokenExpire_lanceLienExpire() {
+        String token = "expired-token-123";
+
+        LienPartage lienExpire = new LienPartage(UUID.randomUUID(), UUID.randomUUID(), token, Permission.TELECHARGEMENT,
+                Instant.now().minusSeconds(3600), true, UUID.randomUUID(), Instant.now(), Instant.now());
+
+        when(lienPartageRepository.findByToken(token)).thenReturn(Optional.of(lienExpire));
+
+        assertThatThrownBy(() -> service.telechargerParToken(token))
+                .isInstanceOf(LienExpireException.class);
     }
 }

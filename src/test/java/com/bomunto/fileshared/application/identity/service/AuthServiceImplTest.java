@@ -115,4 +115,72 @@ class AuthServiceImplTest {
         assertThatThrownBy(() -> authService.login(new LoginCommand("john@gmail.com", "mauvais")))
                 .isInstanceOf(IdentifiantsInvalidesException.class);
     }
+
+    // ================================================================
+    // refresh()
+    // ================================================================
+
+    @Test
+    @DisplayName("refresh - token valide retourne de nouveaux tokens")
+    void refresh_tokenValide_retourneNouveauxTokens() {
+        String refreshToken = "valid-refresh-token";
+        String email = "john@gmail.com";
+        Utilisateur utilisateur = new Utilisateur(
+                UUID.randomUUID(), "john", email, "hashed-password", Role.USER, null, null);
+
+        when(tokenProvider.extractUsername(refreshToken)).thenReturn(email);
+        when(tokenProvider.isTokenValid(refreshToken, email)).thenReturn(true);
+        when(utilisateurRepository.findByEmail(email)).thenReturn(Optional.of(utilisateur));
+        when(tokenProvider.generateToken(utilisateur)).thenReturn("new-jwt-token");
+        when(tokenProvider.generateRefreshToken(utilisateur)).thenReturn("new-refresh-token");
+
+        AuthResult result = authService.refresh(refreshToken);
+
+        assertThat(result.token()).isEqualTo("new-jwt-token");
+        assertThat(result.refreshToken()).isEqualTo("new-refresh-token");
+    }
+
+    @Test
+    @DisplayName("refresh - token invalide leve IdentifiantsInvalidesException")
+    void refresh_tokenInvalide_lanceException() {
+        String refreshToken = "invalid-refresh-token";
+        String email = "john@gmail.com";
+
+        when(tokenProvider.extractUsername(refreshToken)).thenReturn(email);
+        when(tokenProvider.isTokenValid(refreshToken, email)).thenReturn(false);
+
+        assertThatThrownBy(() -> authService.refresh(refreshToken))
+                .isInstanceOf(IdentifiantsInvalidesException.class);
+    }
+
+    // ================================================================
+    // getProfil()
+    // ================================================================
+
+    @Test
+    @DisplayName("getProfil - utilisateur existant retourne l'utilisateur")
+    void getProfil_utilisateurExiste_retourneUtilisateur() {
+        UUID userId = UUID.randomUUID();
+        Utilisateur utilisateur = new Utilisateur(
+                userId, "john", "john@gmail.com", "hashed-password", Role.USER, null, null);
+
+        when(utilisateurRepository.findById(userId)).thenReturn(Optional.of(utilisateur));
+
+        Utilisateur result = authService.getProfil(userId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(userId);
+        assertThat(result.getEmail()).isEqualTo("john@gmail.com");
+    }
+
+    @Test
+    @DisplayName("getProfil - utilisateur inexistant leve IdentifiantsInvalidesException")
+    void getProfil_utilisateurInexistant_lanceException() {
+        UUID userId = UUID.randomUUID();
+
+        when(utilisateurRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> authService.getProfil(userId))
+                .isInstanceOf(IdentifiantsInvalidesException.class);
+    }
 }

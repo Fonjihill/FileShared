@@ -1,6 +1,7 @@
 package com.bomunto.fileshared.infrastructure.web.filesharing.controller;
 
 import com.bomunto.fileshared.domaine.filesharing.port.in.*;
+import com.bomunto.fileshared.infrastructure.security.DtfUserDetails;
 import com.bomunto.fileshared.infrastructure.web.filesharing.dto.FichierDto;
 import com.bomunto.fileshared.infrastructure.web.filesharing.mapper.FichierWebMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,57 +39,40 @@ public class FichierController {
         this.supprimerUseCase = supprimerUseCase;
     }
 
-    // ────────────────────────────────────────────
-    // 1. UPLOAD — POST /fichiers
-    // ────────────────────────────────────────────
     @PostMapping
     @Operation(summary = "Uploader un fichier")
     public ResponseEntity<FichierDto> upload(
             @RequestParam("fichier") MultipartFile fichier,
-            @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+            @AuthenticationPrincipal DtfUserDetails userDetails) throws Exception {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
+        UUID userId = userDetails.getId();
         UploadFichierCommand command = FichierWebMapper.toUploadCommand(fichier, userId);
-
         FichierResult result = uploadUseCase.upload(command);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(FichierDto.from(result.fichier()));
     }
 
-    // ────────────────────────────────────────────
-    // 2. LISTER — GET /fichiers
-    // ────────────────────────────────────────────
     @GetMapping
     @Operation(summary = "Lister mes fichiers")
     public ResponseEntity<List<FichierDto>> lister(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
+        UUID userId = userDetails.getId();
         List<FichierDto> fichiers = listerUseCase.listerFichiers(userId)
                 .stream()
                 .map(FichierDto::from)
                 .toList();
-
         return ResponseEntity.ok(fichiers);
     }
 
-    // ────────────────────────────────────────────
-    // 3. TELECHARGER — GET /fichiers/{id}/telecharger
-    // ────────────────────────────────────────────
     @GetMapping("/{id}/telecharger")
     @Operation(summary = "Télécharger un fichier")
     public ResponseEntity<Resource> telecharger(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
-        FichierContenu contenu = telechargerUseCase.telecharger(
-                new TelechargerCommand(id, userId)
-        );
-
+        UUID userId = userDetails.getId();
+        FichierContenu contenu = telechargerUseCase.telecharger(new TelechargerCommand(id, userId));
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contenu.typeMime()))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -97,16 +80,13 @@ public class FichierController {
                 .body(new InputStreamResource(contenu.contenu()));
     }
 
-    // ────────────────────────────────────────────
-    // 4. SUPPRIMER — DELETE /fichiers/{id}
-    // ────────────────────────────────────────────
     @DeleteMapping("/{id}")
     @Operation(summary = "Supprimer un fichier")
     public ResponseEntity<Void> supprimer(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
+        UUID userId = userDetails.getId();
         supprimerUseCase.supprimer(id, userId);
         return ResponseEntity.noContent().build();
     }

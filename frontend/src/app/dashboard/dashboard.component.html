@@ -1,19 +1,123 @@
 <div class="dashboard-container">
+  <!-- Barre superieure -->
   <div class="topbar">
     <h2><i class="pi pi-cloud-upload"></i> FileShared</h2>
-    <button pButton label="Se déconnecter" icon="pi pi-sign-out"
-            class="p-button-danger p-button-text"
-            (click)="deconnecter()">
-    </button>
+    <div class="topbar-right">
+      <span *ngIf="utilisateur" class="user-info">
+        <i class="pi pi-user"></i> {{ utilisateur.username }}
+        <span class="user-role">({{ utilisateur.role }})</span>
+      </span>
+      <button pButton label="Se deconnecter" icon="pi pi-sign-out"
+              class="p-button-danger p-button-text"
+              (click)="deconnecter()">
+      </button>
+    </div>
   </div>
 
+  <!-- Contenu principal -->
   <div class="content">
-    <p-card>
-      <div class="welcome">
-        <i class="pi pi-check-circle" style="font-size: 3rem; color: #27ae60;"></i>
-        <h1>Bienvenue sur FileShared !</h1>
-        <p>Vous êtes connecté. La gestion des fichiers arrive bientôt.</p>
+    <!-- Toolbar -->
+    <p-toolbar>
+      <div class="p-toolbar-group-start">
+        <h3 style="margin: 0;">Mes fichiers</h3>
       </div>
-    </p-card>
+      <div class="p-toolbar-group-end">
+        <input type="file" #fileInput style="display: none;" (change)="onFichierSelectionne($event)">
+        <button pButton label="Envoyer un fichier" icon="pi pi-upload"
+                class="p-button-success"
+                (click)="fileInput.click()">
+        </button>
+        <button pButton icon="pi pi-refresh" class="p-button-text p-button-secondary"
+                pTooltip="Rafraichir" style="margin-left: 0.5rem;"
+                (click)="chargerFichiers()">
+        </button>
+      </div>
+    </p-toolbar>
+
+    <!-- Table des fichiers -->
+    <p-table [value]="fichiers" [paginator]="true" [rows]="10"
+             [loading]="chargement" [rowHover]="true"
+             emptyMessage="Aucun fichier. Cliquez sur 'Envoyer un fichier' pour commencer.">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nom</th>
+          <th>Taille</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Statut</th>
+          <th style="width: 200px;">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-fichier>
+        <tr>
+          <td>{{ fichier.nomOriginal }}</td>
+          <td>{{ formatTaille(fichier.taille) }}</td>
+          <td>{{ fichier.typeMime }}</td>
+          <td>{{ fichier.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ fichier.statut }}</td>
+          <td>
+            <button pButton icon="pi pi-download" class="p-button-text p-button-info p-button-sm"
+                    pTooltip="Telecharger"
+                    (click)="telecharger(fichier)">
+            </button>
+            <button pButton icon="pi pi-share-alt" class="p-button-text p-button-success p-button-sm"
+                    pTooltip="Partager"
+                    (click)="ouvrirDialogPartage(fichier)">
+            </button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm"
+                    pTooltip="Supprimer"
+                    (click)="confirmerSuppression(fichier)">
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 </div>
+
+<!-- Dialog de partage -->
+<p-dialog header="Partager un fichier" [(visible)]="dialogPartageVisible"
+          [modal]="true" [style]="{width: '500px'}" [closable]="true">
+  <div *ngIf="fichierSelectionne" class="partage-form">
+    <p><strong>Fichier :</strong> {{ fichierSelectionne.nomOriginal }}</p>
+
+    <div class="champ">
+      <label for="permission">Permission</label>
+      <select id="permission" [(ngModel)]="permissionPartage" class="p-inputtext" style="width: 100%;">
+        <option value="LECTURE">Lecture seule</option>
+        <option value="TELECHARGEMENT">Telechargement</option>
+      </select>
+    </div>
+
+    <div class="champ">
+      <label for="expiration">Expiration (optionnel)</label>
+      <input id="expiration" type="datetime-local" pInputText
+             [(ngModel)]="expirationPartage" style="width: 100%;">
+    </div>
+
+    <div *ngIf="!lienPartage" style="margin-top: 1rem;">
+      <button pButton label="Creer le lien" icon="pi pi-link"
+              class="p-button-success" style="width: 100%;"
+              [loading]="creationLienEnCours"
+              (click)="creerLienPartage()">
+      </button>
+    </div>
+
+    <div *ngIf="lienPartage" class="lien-resultat">
+      <label>Lien de partage :</label>
+      <div class="lien-copie">
+        <input pInputText [value]="lienPartage" readonly style="width: 100%;">
+        <button pButton icon="pi pi-copy" class="p-button-text"
+                pTooltip="Copier le lien"
+                (click)="copierLien()">
+        </button>
+      </div>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- Dialog de confirmation de suppression -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toast pour les notifications -->
+<p-toast></p-toast>

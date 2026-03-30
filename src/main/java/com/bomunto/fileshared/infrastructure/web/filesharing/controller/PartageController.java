@@ -2,6 +2,7 @@ package com.bomunto.fileshared.infrastructure.web.filesharing.controller;
 
 import com.bomunto.fileshared.domaine.filesharing.LienPartage;
 import com.bomunto.fileshared.domaine.filesharing.port.in.*;
+import com.bomunto.fileshared.infrastructure.security.DtfUserDetails;
 import com.bomunto.fileshared.infrastructure.web.filesharing.dto.CreerLienRequest;
 import com.bomunto.fileshared.infrastructure.web.filesharing.dto.LienPartageDto;
 import com.bomunto.fileshared.infrastructure.web.filesharing.dto.PartagerRequest;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -33,56 +33,41 @@ public class PartageController {
         this.telechargerUseCase = telechargerUseCase;
     }
 
-    // ────────────────────────────────────────────
-    // 1. CREER UN LIEN DE PARTAGE — POST /fichiers/{id}/partager/lien
-    // ────────────────────────────────────────────
     @PostMapping("/fichiers/{fichierId}/partager/lien")
     @Operation(summary = "Créer un lien de partage pour un fichier")
     public ResponseEntity<LienPartageDto> creerLien(
             @PathVariable UUID fichierId,
             @Valid @RequestBody CreerLienRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
+        UUID userId = userDetails.getId();
         CreerLienCommand command = new CreerLienCommand(
                 fichierId, userId, request.permission(), request.expiration()
         );
-
         LienPartage lien = partagerUseCase.partagerParLien(command);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(LienPartageDto.from(lien));
     }
 
-    // ────────────────────────────────────────────
-    // 2. PARTAGER AVEC UN UTILISATEUR — POST /fichiers/{id}/partager/utilisateur
-    // ────────────────────────────────────────────
     @PostMapping("/fichiers/{fichierId}/partager/utilisateur")
     @Operation(summary = "Partager un fichier avec un utilisateur")
     public ResponseEntity<Void> partagerAvecUtilisateur(
             @PathVariable UUID fichierId,
             @Valid @RequestBody PartagerRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
+        UUID userId = userDetails.getId();
         PartagerCommand command = new PartagerCommand(
                 fichierId, userId, request.destinataireId(), request.permission()
         );
-
         partagerUseCase.partagerAvecUtilisateur(command);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // ────────────────────────────────────────────
-    // 3. ACCEDER VIA LIEN PUBLIC — GET /partages/{token}
-    // ────────────────────────────────────────────
     @GetMapping("/partages/{token}")
     @Operation(summary = "Télécharger un fichier via un lien de partage")
     public ResponseEntity<Resource> telechargerParLien(@PathVariable String token) {
-
         FichierContenu contenu = telechargerUseCase.telechargerParToken(token);
-
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contenu.typeMime()))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -90,16 +75,13 @@ public class PartageController {
                 .body(new InputStreamResource(contenu.contenu()));
     }
 
-    // ────────────────────────────────────────────
-    // 4. REVOQUER UN PARTAGE — DELETE /partages/{id}
-    // ────────────────────────────────────────────
     @DeleteMapping("/partages/{partageId}")
     @Operation(summary = "Révoquer un partage")
     public ResponseEntity<Void> revoquer(
             @PathVariable UUID partageId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
+        UUID userId = userDetails.getId();
         partagerUseCase.revoquerPartage(partageId, userId);
         return ResponseEntity.noContent().build();
     }

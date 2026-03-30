@@ -2,6 +2,7 @@ package com.bomunto.fileshared.infrastructure.web.identity.controller;
 
 import com.bomunto.fileshared.domaine.identity.Utilisateur;
 import com.bomunto.fileshared.domaine.identity.port.in.*;
+import com.bomunto.fileshared.infrastructure.security.DtfUserDetails;
 import com.bomunto.fileshared.infrastructure.web.identity.dto.*;
 import com.bomunto.fileshared.infrastructure.web.identity.mapper.AuthWebMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,8 +77,8 @@ public class AuthController {
     @GetMapping("/me")
     @Operation(summary = "Récupérer le profil de l'utilisateur connecté")
     public ResponseEntity<UtilisateurDto> me(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID userId = UUID.fromString(userDetails.getUsername());
+            @AuthenticationPrincipal DtfUserDetails userDetails) {
+        UUID userId = userDetails.getId();
         Utilisateur utilisateur = getProfilUseCase.getProfil(userId);
         return ResponseEntity.ok(UtilisateurDto.from(utilisateur));
     }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {AuthResponse, LoginRequest, RegisterRequest, RegisterResponse} from "../models/auth.models";
+import {AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, UtilisateurDto} from "../models/auth.models";
 import {Observable, tap} from "rxjs";
 
 @Injectable({
@@ -39,5 +39,19 @@ export class AuthService {
   estConnectee(): boolean {
     const token = this.getToken();
     return !!token; // Retourne true si le token existe, sinon false
+  }
+
+  getProfil(): Observable<UtilisateurDto> {
+    return this.http.get<UtilisateurDto>(`${this.apiUrl}/me`);
+  }
+
+  refresh(): Observable<AuthResponse> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
+      tap(response => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken);
+      })
+    );
   }
 }
